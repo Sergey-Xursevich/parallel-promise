@@ -1,0 +1,24 @@
+{
+  "name": "parallel-promise",
+  "version": "1.0.0",
+  "description": "javascript, typescript, promise",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "run": "node index.js",
+    "clean": "tsc --build --clean"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sergey-Xursevich/parallel-promise.git"
+  },
+  "author": "Sergey Hursevich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sergey-Xursevich/parallel-promise/issues"
+  },
+  "homepage": "https://github.com/Sergey-Xursevich/parallel-promise#readme",
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  }
+}
