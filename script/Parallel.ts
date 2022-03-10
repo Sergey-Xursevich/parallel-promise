@@ -3,7 +3,6 @@ type fOnDone = (done: string[]) => void;
 
 class Parallel {
   limit: number;
-  result: string[] = [];
   tasks: Promise<void>[] = []
 
   constructor({ parallelJobs }) {
@@ -19,12 +18,11 @@ class Parallel {
   async done(onDone: fOnDone) {
     const chunks = this.createChunks(this.tasks);
 
-    await Promise.all(chunks.map(async promise => {
-      const value: string[] = await Promise.all(promise);
-      this.result.push(...value);
+    const result = await Promise.all(chunks.map(async promise => {
+      return await Promise.all(promise);
     }));
 
-    onDone(this.result);
+    onDone(result.flat());
   }
 
   private createTask(func: fStep): Promise<void> {
