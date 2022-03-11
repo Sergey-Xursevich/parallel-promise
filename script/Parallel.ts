@@ -3,41 +3,35 @@ type fOnDone = (done: string[]) => void;
 
 class Parallel {
   limit: number;
-  tasks: Promise<void>[] = []
+  tasks: fStep[] = [];
+  results: string[] = [];
 
   constructor({ parallelJobs }) {
     this.limit = parallelJobs;
   }
 
   job(task: fStep) {
-    const item = this.createTask(task);
-    this.tasks.push(item);
+    this.tasks.push(task);
     return this;
   }
 
   async done(onDone: fOnDone) {
-    const chunks = this.createChunks(this.tasks);
-
-    const result = await Promise.all(chunks.map(async promise => {
-      return await Promise.all(promise);
-    }));
-
-    onDone(result.flat());
+    await this.runWorker();
+    onDone(this.results);
   }
 
-  private createTask(func: fStep): Promise<void> {
-    return new Promise((res, _) => func(res));
-  }
+  private runWorker(): Promise<boolean> {
+    return new Promise(async (resolve, _) => {
+      const currentWorkers = this.tasks.splice(0, this.limit);
+      const workersToRun: Promise<string>[] = currentWorkers.map(work => new Promise(res => work(res)));
+      const answer = await Promise.all(workersToRun);
+      this.results.push(...answer);
 
-  private createChunks(items, limit = this.limit) {
-    const chunks = [];
-    let iteration = 0;
+      if (this.tasks.length)
+        await this.runWorker();
 
-    while (iteration < items.length) {
-      chunks.push(items.slice(iteration, iteration += limit));
-    }
-
-    return chunks;
+      resolve(true);
+    });
   }
 }
 
